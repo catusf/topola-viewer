@@ -1,11 +1,12 @@
 import 'canvas-toBlob';
-import {detect} from 'detect-browser';
+import { detect } from 'detect-browser';
+import queryString from 'query-string';
 import React from 'react';
-import {createRoot} from 'react-dom/client';
-import {IntlProvider} from 'react-intl';
-import {HashRouter as Router} from 'react-router';
+import { createRoot } from 'react-dom/client';
+import { IntlProvider } from 'react-intl';
+import { HashRouter as Router } from 'react-router';
 import 'semantic-ui-css/semantic.min.css';
-import {App} from './app';
+import { App } from './app';
 import './index.css';
 import messages_bg from './translations/bg.json';
 import messages_cs from './translations/cs.json';
@@ -15,8 +16,8 @@ import messages_it from './translations/it.json';
 import messages_pl from './translations/pl.json';
 import messages_ru from './translations/ru.json';
 import messages_vi from './translations/vi.json';
-import {LanguageContext} from './util/language-context';
-import {MediaContextProvider, mediaStyles} from './util/media';
+import { LanguageContext } from './util/language-context';
+import { MediaContextProvider, mediaStyles } from './util/media';
 
 const messages: {[language: string]: {[message_id: string]: string}} = {
   bg: messages_bg,
@@ -30,13 +31,33 @@ const messages: {[language: string]: {[message_id: string]: string}} = {
 };
 
 function Root() {
+  const hash = window.location.hash;
+  const searchString = hash.includes('?') ? hash.substring(hash.indexOf('?') + 1) : '';
+  const search = queryString.parse(searchString);
+  const urlLang = typeof search.lang === 'string' && (search.lang === 'en' || search.lang in messages) ? search.lang : undefined;
+
   const defaultLang =
     navigator.language && navigator.language.split(/[-_]/)[0]
       ? navigator.language.split(/[-_]/)[0]
       : 'en';
   const [language, setLanguage] = React.useState<string>(
-    localStorage.getItem('topola_language') ?? defaultLang,
+    urlLang || localStorage.getItem('topola_language') || defaultLang,
   );
+
+  React.useEffect(() => {
+    const handleHashChange = () => {
+      const newHash = window.location.hash;
+      const newSearchString = newHash.includes('?') ? newHash.substring(newHash.indexOf('?') + 1) : '';
+      const newSearch = queryString.parse(newSearchString);
+      const newUrlLang = typeof newSearch.lang === 'string' && (newSearch.lang === 'en' || newSearch.lang in messages) ? newSearch.lang : undefined;
+      if (newUrlLang && newUrlLang !== language) {
+        setLanguage(newUrlLang);
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [language]);
 
   const handleSetLanguage = (lang: string) => {
     localStorage.setItem('topola_language', lang);
