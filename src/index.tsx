@@ -1,5 +1,6 @@
 import 'canvas-toBlob';
 import {detect} from 'detect-browser';
+import React from 'react';
 import {createRoot} from 'react-dom/client';
 import {IntlProvider} from 'react-intl';
 import {HashRouter as Router} from 'react-router';
@@ -13,6 +14,8 @@ import messages_fr from './translations/fr.json';
 import messages_it from './translations/it.json';
 import messages_pl from './translations/pl.json';
 import messages_ru from './translations/ru.json';
+import messages_vi from './translations/vi.json';
+import {LanguageContext} from './util/language-context';
 import {MediaContextProvider, mediaStyles} from './util/media';
 
 const messages: {[language: string]: {[message_id: string]: string}} = {
@@ -23,8 +26,36 @@ const messages: {[language: string]: {[message_id: string]: string}} = {
   it: messages_it,
   pl: messages_pl,
   ru: messages_ru,
+  vi: messages_vi,
 };
-const language = navigator.language && navigator.language.split(/[-_]/)[0];
+
+function Root() {
+  const defaultLang =
+    navigator.language && navigator.language.split(/[-_]/)[0]
+      ? navigator.language.split(/[-_]/)[0]
+      : 'en';
+  const [language, setLanguage] = React.useState<string>(
+    localStorage.getItem('topola_language') ?? defaultLang,
+  );
+
+  const handleSetLanguage = (lang: string) => {
+    localStorage.setItem('topola_language', lang);
+    setLanguage(lang);
+  };
+
+  return (
+    <LanguageContext.Provider value={{language, setLanguage: handleSetLanguage}}>
+      <IntlProvider locale={language} messages={messages[language]}>
+        <MediaContextProvider>
+          <style>{mediaStyles}</style>
+          <Router>
+            <App />
+          </Router>
+        </MediaContextProvider>
+      </IntlProvider>
+    </LanguageContext.Provider>
+  );
+}
 
 const browser = detect();
 
@@ -39,14 +70,5 @@ if (browser && browser.name === 'ie') {
     </p>,
   );
 } else {
-  root.render(
-    <IntlProvider locale={language} messages={messages[language]}>
-      <MediaContextProvider>
-        <style>{mediaStyles}</style>
-        <Router>
-          <App />
-        </Router>
-      </MediaContextProvider>
-    </IntlProvider>,
-  );
+  root.render(<Root />);
 }

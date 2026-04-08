@@ -1,8 +1,10 @@
 import queryString from 'query-string';
+import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {Link, useLocation, useNavigate} from 'react-router';
 import {Dropdown, Icon, Menu} from 'semantic-ui-react';
 import {IndiInfo, JsonGedcomData} from 'topola';
+import {LanguageContext} from '../util/language-context';
 import {Media} from '../util/media';
 import {MenuType} from './menu_item';
 import {SearchBar} from './search';
@@ -14,6 +16,18 @@ enum ScreenSize {
   LARGE,
   SMALL,
 }
+
+const LANGUAGES = [
+  {code: 'bg', label: 'Български'},
+  {code: 'cs', label: 'Čeština'},
+  {code: 'de', label: 'Deutsch'},
+  {code: 'en', label: 'English'},
+  {code: 'fr', label: 'Français'},
+  {code: 'it', label: 'Italiano'},
+  {code: 'pl', label: 'Polski'},
+  {code: 'ru', label: 'Русский'},
+  {code: 'vi', label: 'Tiếng Việt'},
+];
 
 interface EventHandlers {
   onSelection: (indiInfo: IndiInfo) => void;
@@ -40,6 +54,7 @@ interface Props {
 export function TopBar(props: Props) {
   const navigate = useNavigate();
   const location = useLocation();
+  const {language, setLanguage} = useContext(LanguageContext);
 
   function changeView(view: string) {
     const search = queryString.parse(location.search);
@@ -92,6 +107,28 @@ export function TopBar(props: Props) {
       case ScreenSize.LARGE:
         return (
           <>
+            <Dropdown
+              trigger={
+                <div>
+                  <Icon name="globe" />
+                  {LANGUAGES.find((l) => l.code === language)?.label ?? language}
+                </div>
+              }
+              className="item"
+            >
+              <Dropdown.Menu>
+                {LANGUAGES.map((l) => (
+                  <Dropdown.Item
+                    key={l.code}
+                    active={l.code === language}
+                    onClick={() => setLanguage(l.code)}
+                  >
+                    {l.label}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
+
             <Menu.Item
               onClick={props.eventHandlers.onPrint}
               disabled={!props.allowPrintAndDownload}
@@ -161,6 +198,23 @@ export function TopBar(props: Props) {
               <Icon name="print" />
               <FormattedMessage id="menu.print" defaultMessage="Print" />
             </Dropdown.Item>
+
+            <Dropdown
+              text={LANGUAGES.find((l) => l.code === language)?.label ?? language}
+              floating
+            >
+              <Dropdown.Menu>
+                {LANGUAGES.map((l) => (
+                  <Dropdown.Item
+                    key={l.code}
+                    active={l.code === language}
+                    onClick={() => setLanguage(l.code)}
+                  >
+                    {l.label}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
 
             <Dropdown.Divider />
 
