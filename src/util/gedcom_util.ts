@@ -291,7 +291,9 @@ export function convertGedcom(
   // display them directly without access to the raw GedcomData.
   json.indis.forEach((indi) => {
     if (indi.notes) {
-      const resolved = indi.notes.flatMap((n) => resolveNote(n, gedcomData));
+      const resolved = indi.notes
+        .flatMap((n) => resolveNote(n, gedcomData))
+        .map((n) => n.startsWith('Bio notes: ') ? n.slice('Bio notes: '.length) : n);
       indi.notes = resolved.length ? resolved : undefined;
     }
   });
