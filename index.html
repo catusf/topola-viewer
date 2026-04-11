@@ -12,11 +12,13 @@
     <!-- GOOGLE_ANALYTICS_END -->
     <meta charset="utf-8">
     <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no">
+    <link id="favicon-svg" rel="icon" href="favicon.svg" type="image/svg+xml"/>
     <link rel="icon" href="favicon.png" type="image/png"/>
+    <script>if('%VITE_APP_TITLE%'!=='Họ Phan')document.getElementById('favicon-svg').remove();</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <title>Topola Genealogy Viewer</title>
+    <title>%VITE_APP_TITLE%</title>
   </head>
   <body>
     <noscript>
