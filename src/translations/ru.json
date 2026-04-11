@@ -137,5 +137,6 @@
   "extras.images": "Картинки",
   "extras.notes": "Примечание",
   "extras.sources": "Источники",
-  "extras.files": "Дополнительные файлы"
+  "extras.files": "Дополнительные файлы",
+  "details.generation": "Поколение"
 }

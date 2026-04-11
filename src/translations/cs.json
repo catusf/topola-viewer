@@ -137,5 +137,6 @@
   "extras.images": "Obrázky",
   "extras.notes": "Poznámky",
   "extras.sources": "Zdroje",
-  "extras.files": "Další soubory"
+  "extras.files": "Další soubory",
+  "details.generation": "Generace"
 }

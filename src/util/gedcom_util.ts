@@ -59,6 +59,76 @@ export function idToFamMap(data: JsonGedcomData): Map<string, JsonFam> {
   return map;
 }
 
+/**
+ * Computes absolute generation numbers for all individuals.
+ * The root (individual with no parents in the data and the most descendants)
+ * is Generation 1. Their children are Generation 2, etc.
+ * Spouses are placed at the same generation as their partner.
+ */
+export function computeGenerations(data: JsonGedcomData): Map<string, number> {
+  const indiMap = idToIndiMap(data);
+  const famMap = idToFamMap(data);
+
+  // Root candidates: individuals with no recorded parents in the data
+  const roots = data.indis.filter((indi) => {
+    if (!indi.famc) return true;
+    const fam = famMap.get(indi.famc);
+    if (!fam) return true;
+    return !((fam.husb && indiMap.has(fam.husb)) || (fam.wife && indiMap.has(fam.wife)));
+  });
+
+  // Pick the root candidate with the most descendants
+  function countDescendants(id: string, visited = new Set<string>()): number {
+    if (visited.has(id)) return 0;
+    visited.add(id);
+    const indi = indiMap.get(id);
+    if (!indi?.fams) return 0;
+    let count = 0;
+    for (const famId of indi.fams) {
+      const fam = famMap.get(famId);
+      for (const childId of fam?.children ?? []) {
+        count += 1 + countDescendants(childId, visited);
+      }
+    }
+    return count;
+  }
+
+  let rootId = roots[0]?.id;
+  let maxDesc = -1;
+  for (const root of roots) {
+    const n = countDescendants(root.id);
+    if (n > maxDesc) {
+      maxDesc = n;
+      rootId = root.id;
+    }
+  }
+  if (!rootId) return new Map();
+
+  // BFS: assign generation numbers, propagating spouses to the same generation
+  const generations = new Map<string, number>();
+  const queue: {id: string; gen: number}[] = [{id: rootId, gen: 1}];
+  while (queue.length > 0) {
+    const {id, gen} = queue.shift()!;
+    if (generations.has(id)) continue;
+    generations.set(id, gen);
+    const indi = indiMap.get(id);
+    for (const famId of indi?.fams ?? []) {
+      const fam = famMap.get(famId);
+      if (!fam) continue;
+      const spouseId = fam.husb === id ? fam.wife : fam.husb;
+      if (spouseId && !generations.has(spouseId)) {
+        queue.push({id: spouseId, gen});
+      }
+      for (const childId of fam.children ?? []) {
+        if (!generations.has(childId)) {
+          queue.push({id: childId, gen: gen + 1});
+        }
+      }
+    }
+  }
+  return generations;
+}
+
 function prepareGedcom(entries: GedcomEntry[]): GedcomData {
   const head = entries.find((entry) => entry.tag === 'HEAD')!;
   const indis: {[key: string]: GedcomEntry} = {};

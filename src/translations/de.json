@@ -137,5 +137,6 @@
   "extras.images": "Bilder",
   "extras.notes": "Notizen",
   "extras.sources": "Quellen",
-  "extras.files": "Weitere Dateien"
+  "extras.files": "Weitere Dateien",
+  "details.generation": "Generation"
 }

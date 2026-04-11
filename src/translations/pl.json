@@ -137,5 +137,6 @@
   "extras.images": "Zdjęcia",
   "extras.notes": "Notatki",
   "extras.sources": "Źródła",
-  "extras.files": "Dodatkowe pliki"
+  "extras.files": "Dodatkowe pliki",
+  "details.generation": "Pokolenie"
 }

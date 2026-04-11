@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"indis\\\\[0\\\\]\\\\|first.*indi\\\\|root\" /workspaces/topola-viewer/src/datasource/*.ts /workspaces/topola-viewer/src/*.tsx)"
+    ]
+  }
+}

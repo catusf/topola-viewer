@@ -342,9 +342,21 @@ function CopyLinkSection({indi}: {indi: string}) {
   );
 }
 
+function GenerationSection({generation}: {generation: number}) {
+  return (
+    <>
+      <Header sub>
+        <FormattedMessage id="details.generation" defaultMessage="Generation" />
+      </Header>
+      <div>{generation}</div>
+    </>
+  );
+}
+
 interface Props {
   gedcom: GedcomData;
   indi: string;
+  generation?: number;
 }
 
 export function Details(props: Props) {
@@ -396,6 +408,13 @@ export function Details(props: Props) {
             <CopyLinkSection indi={props.indi} />
           </Item.Content>
         </Item>
+        {props.generation !== undefined && (
+          <Item>
+            <Item.Content>
+              <GenerationSection generation={props.generation} />
+            </Item.Content>
+          </Item>
+        )}
       </Item.Group>
     </div>
   );

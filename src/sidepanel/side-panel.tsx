@@ -1,6 +1,7 @@
+import {useMemo} from 'react';
 import {useIntl} from 'react-intl';
 import {Button, Icon, Sidebar, Tab} from 'semantic-ui-react';
-import {TopolaData} from '../util/gedcom_util';
+import {computeGenerations, TopolaData} from '../util/gedcom_util';
 import {Config, ConfigPanel} from './config/config';
 import {CollapsedDetails} from './details/collapsed-details';
 import {Details} from './details/details';
@@ -23,6 +24,8 @@ export function SidePanel({
   onToggle,
 }: SidePanelProps) {
   const intl = useIntl();
+  const generationMap = useMemo(() => computeGenerations(data.chartData), [data]);
+  const generation = generationMap.get(selectedIndiId);
 
   const tabs = [
     {
@@ -30,7 +33,7 @@ export function SidePanel({
         id: 'tab.info',
         defaultMessage: 'Info',
       }),
-      render: () => <Details gedcom={data.gedcom} indi={selectedIndiId} />,
+      render: () => <Details gedcom={data.gedcom} indi={selectedIndiId} generation={generation} />,
     },
     {
       menuItem: intl.formatMessage({
