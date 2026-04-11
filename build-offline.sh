@@ -6,16 +6,41 @@
 #
 #  Usage:
 #    chmod +x build-offline.sh
-#    ./build-offline.sh path/to/your-file.ged
+#    ./build-offline.sh path/to/your-file.ged [--title "Custom Title"]
 #
 #  Requires: Node.js 18+
 # ============================================================
 set -euo pipefail
 
-GED_FILE="${1:-}"
+GED_FILE=""
+APP_TITLE=""
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --title)
+      APP_TITLE="$2"
+      shift 2
+      ;;
+    -*)
+      echo "Unknown option: $1"
+      echo "Usage: $0 path/to/your-file.ged [--title \"Custom Title\"]"
+      exit 1
+      ;;
+    *)
+      if [[ -z "$GED_FILE" ]]; then
+        GED_FILE="$1"
+      else
+        echo "Multiple GED files specified. Usage: $0 path/to/your-file.ged [--title \"Custom Title\"]"
+        exit 1
+      fi
+      shift
+      ;;
+  esac
+done
 
 if [[ -z "$GED_FILE" ]]; then
-  echo "Usage: $0 path/to/your-file.ged"
+  echo "Usage: $0 path/to/your-file.ged [--title \"Custom Title\"]"
   exit 1
 fi
 
@@ -49,6 +74,7 @@ VITE_GOOGLE_ANALYTICS=false
 VITE_CHANGELOG=
 VITE_GIT_SHA=local
 VITE_GIT_TIME=local
+$(if [[ -n "$APP_TITLE" ]]; then echo "VITE_APP_TITLE=$APP_TITLE"; fi)
 ENVEOF
 
 echo "▶ Step 4/4  Building..."

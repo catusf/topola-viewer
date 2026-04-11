@@ -1,16 +1,16 @@
 import queryString from 'query-string';
-import React, {useContext} from 'react';
-import {FormattedMessage} from 'react-intl';
-import {Link, useLocation, useNavigate} from 'react-router';
-import {Dropdown, Icon, Menu} from 'semantic-ui-react';
-import {IndiInfo, JsonGedcomData} from 'topola';
-import {LanguageContext} from '../util/language-context';
-import {Media} from '../util/media';
-import {MenuType} from './menu_item';
-import {SearchBar} from './search';
-import {UploadMenu} from './upload_menu';
-import {UrlMenu} from './url_menu';
-import {WikiTreeLoginMenu, WikiTreeMenu} from './wikitree_menu';
+import { useContext } from 'react';
+import { FormattedMessage } from 'react-intl';
+import { Link, useLocation, useNavigate } from 'react-router';
+import { Dropdown, Icon, Menu } from 'semantic-ui-react';
+import { IndiInfo, JsonGedcomData } from 'topola';
+import { LanguageContext } from '../util/language-context';
+import { Media } from '../util/media';
+import { MenuType } from './menu_item';
+import { SearchBar } from './search';
+import { UploadMenu } from './upload_menu';
+import { UrlMenu } from './url_menu';
+import { WikiTreeLoginMenu, WikiTreeMenu } from './wikitree_menu';
 
 enum ScreenSize {
   LARGE,
@@ -65,193 +65,46 @@ export function TopBar(props: Props) {
     }
   }
 
-  function chartMenus(screenSize: ScreenSize) {
-    if (!props.showingChart) {
-      return null;
-    }
-    const chartTypeItems = (
-      <>
-        <Dropdown.Item onClick={() => changeView('hourglass')}>
-          <Icon name="hourglass" />
-          <FormattedMessage
-            id="menu.hourglass"
-            defaultMessage="Hourglass chart"
-          />
-        </Dropdown.Item>
-        {props.allowAllRelativesChart ? (
-          <Dropdown.Item onClick={() => changeView('relatives')}>
-            <Icon name="users" />
-            <FormattedMessage
-              id="menu.relatives"
-              defaultMessage="All relatives"
-            />
-          </Dropdown.Item>
-        ) : null}
-        <Dropdown.Item onClick={() => changeView('donatso')}>
+  const chartTypeItems = (
+    <>
+      <Dropdown.Item onClick={() => changeView('hourglass')}>
+        <Icon name="hourglass" />
+        <FormattedMessage
+          id="menu.hourglass"
+          defaultMessage="Hourglass chart"
+        />
+      </Dropdown.Item>
+      {props.allowAllRelativesChart ? (
+        <Dropdown.Item onClick={() => changeView('relatives')}>
           <Icon name="users" />
           <FormattedMessage
-            id="menu.donatso"
-            defaultMessage="Donatso family chart"
+            id="menu.relatives"
+            defaultMessage="All relatives"
           />
         </Dropdown.Item>
-        <Dropdown.Item onClick={() => changeView('fancy')}>
-          <Icon name="users" />
-          <FormattedMessage
-            id="menu.fancy"
-            defaultMessage="Fancy tree (experimental)"
-          />
-        </Dropdown.Item>
-      </>
-    );
-    switch (screenSize) {
-      case ScreenSize.LARGE:
-        return (
-          <>
-            <Dropdown
-              trigger={
-                <div>
-                  <Icon name="globe" />
-                  {LANGUAGES.find((l) => l.code === language)?.label ?? language}
-                </div>
-              }
-              className="item"
-            >
-              <Dropdown.Menu>
-                {LANGUAGES.map((l) => (
-                  <Dropdown.Item
-                    key={l.code}
-                    active={l.code === language}
-                    onClick={() => setLanguage(l.code)}
-                  >
-                    {l.label}
-                  </Dropdown.Item>
-                ))}
-              </Dropdown.Menu>
-            </Dropdown>
-
-            <Menu.Item
-              onClick={props.eventHandlers.onPrint}
-              disabled={!props.allowPrintAndDownload}
-            >
-              <Icon name="print" />
-              <FormattedMessage id="menu.print" defaultMessage="Print" />
-            </Menu.Item>
-
-            <Dropdown
-              trigger={
-                <div>
-                  <Icon name="download" />
-                  <FormattedMessage
-                    id="menu.download"
-                    defaultMessage="Download"
-                  />
-                </div>
-              }
-              className="item"
-              disabled={!props.allowPrintAndDownload}
-            >
-              <Dropdown.Menu>
-                <Dropdown.Item onClick={props.eventHandlers.onDownloadPdf}>
-                  <FormattedMessage
-                    id="menu.pdf_file"
-                    defaultMessage="PDF file"
-                  />
-                </Dropdown.Item>
-                <Dropdown.Item onClick={props.eventHandlers.onDownloadPng}>
-                  <FormattedMessage
-                    id="menu.png_file"
-                    defaultMessage="PNG file"
-                  />
-                </Dropdown.Item>
-                <Dropdown.Item onClick={props.eventHandlers.onDownloadSvg}>
-                  <FormattedMessage
-                    id="menu.svg_file"
-                    defaultMessage="SVG file"
-                  />
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-
-            <Dropdown
-              trigger={
-                <div>
-                  <Icon name="eye" />
-                  <FormattedMessage id="menu.view" defaultMessage="View" />
-                </div>
-              }
-              className="item"
-            >
-              <Dropdown.Menu>{chartTypeItems}</Dropdown.Menu>
-            </Dropdown>
-            <SearchBar
-              data={props.data!}
-              onSelection={props.eventHandlers.onSelection}
-              {...props}
-            />
-          </>
-        );
-
-      case ScreenSize.SMALL:
-        return (
-          <>
-            <Dropdown.Item onClick={props.eventHandlers.onPrint}>
-              <Icon name="print" />
-              <FormattedMessage id="menu.print" defaultMessage="Print" />
-            </Dropdown.Item>
-
-            <Dropdown
-              text={LANGUAGES.find((l) => l.code === language)?.label ?? language}
-              floating
-            >
-              <Dropdown.Menu>
-                {LANGUAGES.map((l) => (
-                  <Dropdown.Item
-                    key={l.code}
-                    active={l.code === language}
-                    onClick={() => setLanguage(l.code)}
-                  >
-                    {l.label}
-                  </Dropdown.Item>
-                ))}
-              </Dropdown.Menu>
-            </Dropdown>
-
-            <Dropdown.Divider />
-
-            <Dropdown.Item onClick={props.eventHandlers.onDownloadPdf}>
-              <Icon name="download" />
-              <FormattedMessage
-                id="menu.download_pdf"
-                defaultMessage="Download PDF"
-              />
-            </Dropdown.Item>
-            <Dropdown.Item onClick={props.eventHandlers.onDownloadPng}>
-              <Icon name="download" />
-              <FormattedMessage
-                id="menu.download_png"
-                defaultMessage="Download PNG"
-              />
-            </Dropdown.Item>
-            <Dropdown.Item onClick={props.eventHandlers.onDownloadSvg}>
-              <Icon name="download" />
-              <FormattedMessage
-                id="menu.download_svg"
-                defaultMessage="Download SVG"
-              />
-            </Dropdown.Item>
-
-            <Dropdown.Divider />
-            {chartTypeItems}
-            <Dropdown.Divider />
-          </>
-        );
-    }
-  }
+      ) : null}
+      <Dropdown.Item onClick={() => changeView('donatso')}>
+        <Icon name="users" />
+        <FormattedMessage
+          id="menu.donatso"
+          defaultMessage="Donatso family chart"
+        />
+      </Dropdown.Item>
+      <Dropdown.Item onClick={() => changeView('fancy')}>
+        <Icon name="users" />
+        <FormattedMessage
+          id="menu.fancy"
+          defaultMessage="Fancy tree (experimental)"
+        />
+      </Dropdown.Item>
+    </>
+  );
 
   function title() {
+    const appTitle = import.meta.env.VITE_APP_TITLE || 'Topola Genealogy';
     return (
       <Menu.Item>
-        <b>Topola Genealogy</b>
+        <b>{appTitle}</b>
       </Menu.Item>
     );
   }
@@ -349,9 +202,36 @@ export function TopBar(props: Props) {
         >
           <Dropdown.Menu>
             {fileMenus(ScreenSize.SMALL)}
-            {chartMenus(ScreenSize.SMALL)}
+            <Dropdown.Item onClick={props.eventHandlers.onDownloadPdf}>
+              <Icon name="download" />
+              <FormattedMessage
+                id="menu.download_pdf"
+                defaultMessage="Download PDF"
+              />
+            </Dropdown.Item>
+            <Dropdown.Item onClick={props.eventHandlers.onDownloadPng}>
+              <Icon name="download" />
+              <FormattedMessage
+                id="menu.download_png"
+                defaultMessage="Download PNG"
+              />
+            </Dropdown.Item>
+            <Dropdown.Item onClick={props.eventHandlers.onDownloadSvg}>
+              <Icon name="download" />
+              <FormattedMessage
+                id="menu.download_svg"
+                defaultMessage="Download SVG"
+              />
+            </Dropdown.Item>
+            <Dropdown.Divider />
+            {chartTypeItems}
+            <Dropdown.Divider />
+            <Dropdown.Item onClick={props.eventHandlers.onPrint}>
+              <Icon name="print" />
+              <FormattedMessage id="menu.print" defaultMessage="Print" />
+            </Dropdown.Item>
+            <Dropdown.Divider />
             {wikiTreeLoginMenu(ScreenSize.SMALL)}
-
             <Dropdown.Item
               href="https://github.com/PeWu/topola-viewer"
               target="_blank"
@@ -365,6 +245,34 @@ export function TopBar(props: Props) {
           </Dropdown.Menu>
         </Dropdown>
         {props.standalone ? <Link to="/">{title()}</Link> : title()}
+        {props.data && (
+          <SearchBar
+            data={props.data}
+            onSelection={props.eventHandlers.onSelection}
+            {...props}
+          />
+        )}
+        <Dropdown
+          trigger={
+            <div>
+              <Icon name="globe" />
+            </div>
+          }
+          className="item"
+          icon={null}
+        >
+          <Dropdown.Menu>
+            {LANGUAGES.map((l) => (
+              <Dropdown.Item
+                key={l.code}
+                active={l.code === language}
+                onClick={() => setLanguage(l.code)}
+              >
+                {l.label}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
       </>
     );
   }
@@ -373,8 +281,66 @@ export function TopBar(props: Props) {
     return (
       <>
         {props.standalone ? <Link to="/">{title()}</Link> : null}
+        {props.data && (
+          <SearchBar
+            data={props.data}
+            onSelection={props.eventHandlers.onSelection}
+            {...props}
+          />
+        )}
         {fileMenus(ScreenSize.LARGE)}
-        {chartMenus(ScreenSize.LARGE)}
+        <Dropdown
+          trigger={
+            <div>
+              <Icon name="download" />
+              <FormattedMessage
+                id="menu.download"
+                defaultMessage="Download"
+              />
+            </div>
+          }
+          className="item"
+          disabled={!props.allowPrintAndDownload}
+        >
+          <Dropdown.Menu>
+            <Dropdown.Item onClick={props.eventHandlers.onDownloadPdf}>
+              <FormattedMessage
+                id="menu.pdf_file"
+                defaultMessage="PDF file"
+              />
+            </Dropdown.Item>
+            <Dropdown.Item onClick={props.eventHandlers.onDownloadPng}>
+              <FormattedMessage
+                id="menu.png_file"
+                defaultMessage="PNG file"
+              />
+            </Dropdown.Item>
+            <Dropdown.Item onClick={props.eventHandlers.onDownloadSvg}>
+              <FormattedMessage
+                id="menu.svg_file"
+                defaultMessage="SVG file"
+              />
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+        <Dropdown
+          trigger={
+            <div>
+              <Icon name="eye" />
+              <FormattedMessage id="menu.view" defaultMessage="View" />
+            </div>
+          }
+          className="item"
+        >
+          <Dropdown.Menu>{chartTypeItems}</Dropdown.Menu>
+        </Dropdown>
+        <Menu.Item
+          onClick={props.eventHandlers.onPrint}
+          disabled={!props.allowPrintAndDownload}
+        >
+          <Icon name="print" />
+          <FormattedMessage id="menu.print" defaultMessage="Print" />
+        </Menu.Item>
         <Menu.Menu position="right">
           {wikiTreeLoginMenu(ScreenSize.LARGE)}
           <Menu.Item
@@ -388,6 +354,27 @@ export function TopBar(props: Props) {
             />
           </Menu.Item>
         </Menu.Menu>
+        <Dropdown
+          trigger={
+            <div>
+              <Icon name="globe" />
+              {LANGUAGES.find((l) => l.code === language)?.label ?? language}
+            </div>
+          }
+          className="item"
+        >
+          <Dropdown.Menu>
+            {LANGUAGES.map((l) => (
+              <Dropdown.Item
+                key={l.code}
+                active={l.code === language}
+                onClick={() => setLanguage(l.code)}
+              >
+                {l.label}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
       </>
     );
   }
