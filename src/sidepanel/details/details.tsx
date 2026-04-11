@@ -403,11 +403,6 @@ export function Details(props: Props) {
           ['SOUR'],
           sourceDetails,
         )}
-        <Item>
-          <Item.Content>
-            <CopyLinkSection indi={props.indi} />
-          </Item.Content>
-        </Item>
         {props.generation !== undefined && (
           <Item>
             <Item.Content>
@@ -415,6 +410,11 @@ export function Details(props: Props) {
             </Item.Content>
           </Item>
         )}
+        <Item>
+          <Item.Content>
+            <CopyLinkSection indi={props.indi} />
+          </Item.Content>
+        </Item>
       </Item.Group>
     </div>
   );

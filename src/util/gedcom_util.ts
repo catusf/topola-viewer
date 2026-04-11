@@ -357,6 +357,24 @@ export function convertGedcom(
 
   const gedcomData = prepareGedcom(entries);
 
+  // Strip the "Bio notes: " prefix from NOTE entries in the raw GedcomData so
+  // it is absent everywhere (Info pane, chart tooltips, etc.) without needing
+  // per-render filtering.
+  const BIO_NOTES_PREFIX = 'Bio notes: ';
+  function stripBioPrefix(data: string | undefined): string | undefined {
+    return data?.startsWith(BIO_NOTES_PREFIX) ? data.slice(BIO_NOTES_PREFIX.length) : data;
+  }
+  // Inline NOTE sub-entries on each individual
+  Object.values(gedcomData.indis).forEach((indiEntry) => {
+    indiEntry.tree
+      .filter((e) => e.tag === 'NOTE')
+      .forEach((e) => { e.data = stripBioPrefix(e.data)!; });
+  });
+  // Top-level referenced NOTE entries (@NXXXX@) stored in gedcom.other
+  Object.values(gedcomData.other)
+    .filter((e) => e.tag === 'NOTE')
+    .forEach((e) => { e.data = stripBioPrefix(e.data)!; });
+
   // Resolve note pointers (@NXXXX@) to actual text so the chart renderer can
   // display them directly without access to the raw GedcomData.
   json.indis.forEach((indi) => {
